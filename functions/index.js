@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const handlebars = require('handlebars');
+const cors = require('cors')({ origin: 'https://gurunetwork.in' });
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
@@ -67,20 +68,22 @@ async function sendMail() {
 }
 
 exports.sendParchiEmail = functions.https.onRequest((req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://gurunetwork.in');
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', true)
-    senderName = req.body.name;
-    senderMail = req.body.email;
-    location = req.body.location;
-    pincode = req.body.pincode;
-    phoneNumber = req.body.phoneNumber;
-    project = req.body.project;
-    developer = req.body.developer;
-    configuration = req.body.configuration;
-    console.log('email = ',senderMail);
-    sendMail()
-        .then((result) => res.send(`sent mail`))
-        .catch((error) => res.send('error'));
+    cors(req, res, () => {
+        res.setHeader('Access-Control-Allow-Origin', 'https://gurunetwork.in');
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', true)
+        senderName = req.body.name;
+        senderMail = req.body.email;
+        location = req.body.location;
+        pincode = req.body.pincode;
+        phoneNumber = req.body.phoneNumber;
+        project = req.body.project;
+        developer = req.body.developer;
+        configuration = req.body.configuration;
+        console.log('email = ', senderMail);
+        sendMail()
+            .then((result) => res.send(`sent mail`))
+            .catch((error) => res.send('error'));
+    });
 })
